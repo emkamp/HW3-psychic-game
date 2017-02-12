@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Psychic Game</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <style type="text/css">
+    p {
+        display: inline-block;
+        border: 2px solid #ccc;
+        margin: 20px;
+        padding: 10px;
+    }
+    
+    #game-end {
+        padding: 0 20px;
+        font-size: 42px;
+        color: #e00;
+        font-weight: 800;
+    }
+    
+    #replay {
+        border: 2px solid #2d2;
+        background-color: #6f6;
+        font-size: 20px;
+        padding: 8px;
+        margin: 10px 20px;
+    }
+    </style>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function() {
+
+        // set vars: number of guesses, wins, letter storage, letter array
+        var maxGuesses = 4;
+        var guessesLeft = maxGuesses;
+        var myLibrary = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+        var userLetter = "";
+        var userWin = 0;
+        var userLoss = 0;
+        var gameOver = false;
+
+        $("#turn-count").html(guessesLeft + 1);
+        $("#replay").hide();
+
+        $(document).keyup(function(event) { /**********************/
+
+            // set content
+            function countGuesses() {
+                if (guessesLeft > 0) {
+                    $("#turn-count").html(guessesLeft);
+                    gameOver = false;
+                } else {
+                    $("#turn-count").html(guessesLeft);
+
+                    gameOver = true;
+                }
+            }
+
+            if (gameOver === false) {
+                // random number generator picks a letter from an array and stores it to a variable
+                function thinkNumber() {
+                    min = Math.ceil(0);
+                    max = Math.floor(25);
+                    myLetter = myLibrary[Math.floor(Math.random() * (max - min)) + min];
+                    console.log("myLetter: " + myLetter);
+                }
+
+                countGuesses();
+                thinkNumber();
+
+                // user enters letter
+                var userLetter = event.key.toUpperCase();
+                console.log("userLetter: " + userLetter);
+
+                if ($.inArray(userLetter, myLibrary) < 0) {
+                    $(".user-guesses").append("<p>You must guess a <strong>letter</strong></p>");
+                }
+                // if userLetter = myLetter, +userWin
+                else if (userLetter == myLetter) {
+                    userWin++;
+                    guessesLeft--;
+                    $(".user-guesses").append("<p>Your guess: " + userLetter + " is correct.<br />Wins: " + userWin + "<br />Losses: " + userLoss + "<br />Your guesses so far: " + (maxGuesses - guessesLeft) + "</p>");
+                    // if userLetter != myLetter, +userLoss
+                } else {
+                    userLoss++;
+                    guessesLeft--;
+                    $(".user-guesses").append("<p>Your guess: " + userLetter + " is incorrect.<br />Wins: " + userWin + "<br />Losses: " + userLoss + "<br />Your guesses so far: " + (maxGuesses - guessesLeft) + "</p>");
+                }
+                // Reset myLetter to a new random guess
+                //thinkNumber();
+                //countGuesses();
+            } else {
+                $("#game-end").html("GAME OVER");
+                $("#replay").show();
+                return
+                // stop everything if you've got no guesses left
+            }
+
+            $("#replay").click(function() {
+                location.reload();
+            });
+        }); /** end onclick **/
+    });
+    </script>
+</head>
+
+<body>
+    <h1>I'm thinking of a letter</h1>
+    <h3>Type any letter to guess.  You have <span id="turn-count"></span> turns left.</h3>
+    <div class="user-guesses"></div>
+    <div id="game-end"></div>
+    <button id="replay">Play Again</button>
+</body>
+
+</html>
